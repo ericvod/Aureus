@@ -1,0 +1,7 @@
+export PATH=/bin:/sbin:/usr/bin:/usr/sbin
+export HOME=/root
+export USER=root
+export LOGNAME=root
+export PS1='[root@aureus]# '
+
+cd /root

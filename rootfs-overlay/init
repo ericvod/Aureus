@@ -1,0 +1,61 @@
+#!/bin/sh
+
+export PATH=/bin:/sbin:/usr/bin:/usr/sbin
+export HOME=/root
+export USER=root
+export LOGNAME=root
+
+echo "[init] Iniciando o Aureus..."
+
+mount -t devtmpfs devtmpfs /dev 2>/dev/null || true
+
+mkdir -p /dev/pts
+mkdir -p /dev/shm
+mkdir -p /run
+
+mount -t proc proc /proc
+mount -t sysfs sysfs /sys
+mount -t devpts devpts /dev/pts
+mount -t tmpfs tmpfs /dev/shm
+mount -t tmpfs tmpfs /run
+
+if [ -r /etc/hostname ]; then
+    hostname "$(cat /etc/hostname)"
+fi
+
+if [ -r /etc/os-release ]; then
+    . /etc/os-release
+else
+    PRETTY_NAME="Aureus Linux"
+fi
+
+clear
+
+echo "========================================"
+echo "             $PRETTY_NAME"
+echo "========================================"
+echo
+echo "Kernel:    $(uname -r)"
+echo "Máquina:   $(uname -m)"
+echo "Userspace: $(busybox | head -n 1)"
+echo
+echo "Comandos para experimentar:"
+echo "  uname -a"
+echo "  cat /etc/os-release"
+echo "  cat /proc/cpuinfo"
+echo "  cat /proc/meminfo"
+echo "  ps"
+echo "  mount"
+echo "  free"
+echo
+echo "Digite 'exit' para desligar o Aureus."
+echo
+
+setsid cttyhack sh -l
+
+echo
+echo "[init] Shell encerrado."
+echo "[init] Sincronizando e desligando..."
+
+sync
+reboot -f
