@@ -27,6 +27,10 @@ commands=(
     file
     objdump
     fakeroot
+    grub-mkrescue
+    xorriso
+    mformat
+    mkfs.fat
     qemu-system-x86_64
 )
 
@@ -46,7 +50,7 @@ echo
 arch="$(uname -m)"
 
 if [[ "$arch" != "x86_64" ]]; then
-    warning "Host detectado como $arch; Aureus 0.2 espera x86_64."
+    warning "Host detectado como $arch; Aureus ${AUREUS_VERSION} suporta apenas x86_64."
     failed=1
 else
     success "Arquitetura do host: x86_64"
