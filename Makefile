@@ -12,7 +12,10 @@ JOBS ?= $(shell nproc)
 	busybox \
 	rootfs \
 	initramfs \
+	iso \
+	verify-iso \
 	run \
+	run-iso \
 	kernel-menuconfig \
 	busybox-menuconfig \
 	clean \
@@ -40,8 +43,17 @@ rootfs: busybox
 initramfs: rootfs
 	@./scripts/build-initramfs.sh
 
+iso: all
+	@./scripts/build-iso.sh
+
+verify-iso: iso
+	@./scripts/verify-iso.sh
+
 run: all
 	@./scripts/run-qemu.sh
+
+run-iso: iso
+	@./scripts/run-iso.sh
 
 kernel-menuconfig: download
 	@./scripts/configure-kernel.sh
@@ -71,8 +83,11 @@ help:
 	@echo "  make busybox            Compila o BusyBox"
 	@echo "  make rootfs             Monta o root filesystem"
 	@echo "  make initramfs          Gera o initramfs"
-	@echo "  make                    Constrói o Aureus"
-	@echo "  make run                Constrói e inicia o Aureus"
+	@echo "  make                    Constrói o kernel e o initramfs"
+	@echo "  make iso                Gera a Live ISO inicializável"
+	@echo "  make verify-iso         Constrói e verifica a Live ISO"
+	@echo "  make run                Constrói e inicia pelo boot direto"
+	@echo "  make run-iso            Constrói e inicia a Live ISO"
 	@echo "  make kernel-menuconfig  Configura o kernel"
 	@echo "  make busybox-menuconfig Configura o BusyBox"
 	@echo "  make clean              Remove build/"

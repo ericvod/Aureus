@@ -27,6 +27,10 @@ commands=(
     file
     objdump
     fakeroot
+    grep
+    cmp
+    mktemp
+    grub-script-check
     grub-mkrescue
     xorriso
     mformat
@@ -49,11 +53,11 @@ echo
 
 arch="$(uname -m)"
 
-if [[ "$arch" != "x86_64" ]]; then
-    warning "Host detectado como $arch; Aureus ${AUREUS_VERSION} suporta apenas x86_64."
+if [[ "$arch" != "$AUREUS_ARCH" ]]; then
+    warning "Host detectado como $arch; Aureus ${AUREUS_VERSION} espera ${AUREUS_ARCH}."
     failed=1
 else
-    success "Arquitetura do host: x86_64"
+    success "Arquitetura do host: $arch"
 fi
 
 if [[ -c /dev/kvm && -r /dev/kvm && -w /dev/kvm ]]; then
@@ -61,6 +65,18 @@ if [[ -c /dev/kvm && -r /dev/kvm && -w /dev/kvm ]]; then
 else
     warning "KVM indisponível para este usuário."
     warning "O Aureus usará QEMU/TCG com '-cpu max'."
+fi
+
+if [[ -f "$OVMF_CODE" && -f "$OVMF_VARS_TEMPLATE" ]]; then
+    success "OVMF disponível para testes UEFI."
+else
+    warning "OVMF incompleto; testes UEFI pelo QEMU estarão indisponíveis."
+
+    [[ -f "$OVMF_CODE" ]] \
+        || warning "Firmware ausente: $OVMF_CODE"
+
+    [[ -f "$OVMF_VARS_TEMPLATE" ]] \
+        || warning "Template de variáveis ausente: $OVMF_VARS_TEMPLATE"
 fi
 
 echo

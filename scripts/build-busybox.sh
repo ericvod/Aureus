@@ -9,14 +9,26 @@ require_file "$BUSYBOX_CONFIG"
 
 mkdir -p "$BUSYBOX_BUILD"
 
+export KCONFIG_NOTIMESTAMP=1
+
 log "Preparando configuração do BusyBox..."
 
-cp "$BUSYBOX_CONFIG" "$BUSYBOX_BUILD/.config"
+cp \
+    "$BUSYBOX_CONFIG" \
+    "$BUSYBOX_BUILD/.config"
 
-make \
+config_log="$BUSYBOX_BUILD/oldconfig.log"
+
+if ! make \
     -C "$BUSYBOX_SRC" \
     O="$BUSYBOX_BUILD" \
-    oldconfig
+    oldconfig \
+    </dev/null \
+    >"$config_log" 2>&1; then
+
+    cat "$config_log" >&2
+    die "Falha ao atualizar a configuração do BusyBox."
+fi
 
 log "Compilando BusyBox ${BUSYBOX_VERSION}..."
 
@@ -27,7 +39,9 @@ make \
 
 require_file "$BUSYBOX_BUILD/busybox"
 
-if ! file "$BUSYBOX_BUILD/busybox" | grep -q 'statically linked'; then
+if ! file "$BUSYBOX_BUILD/busybox" \
+    | grep -q 'statically linked'; then
+
     die "BusyBox não foi compilado estaticamente."
 fi
 
