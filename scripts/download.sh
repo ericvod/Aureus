@@ -6,31 +6,6 @@ source "$(dirname "$0")/lib/common.sh"
 
 prepare_directories
 
-download_if_missing() {
-    local url="$1"
-    local destination="$2"
-
-    if [[ -f "$destination" ]]; then
-        log "Já existe: $(basename "$destination")"
-        return
-    fi
-
-    log "Baixando $(basename "$destination")..."
-
-    local temporary="${destination}.part"
-
-    rm -f "$temporary"
-
-    curl \
-        --fail \
-        --location \
-        --retry 3 \
-        --output "$temporary" \
-        "$url"
-
-    mv "$temporary" "$destination"
-}
-
 KERNEL_URL="https://cdn.kernel.org/pub/linux/kernel/v${KERNEL_SERIES}/linux-${KERNEL_VERSION}.tar.xz"
 KERNEL_SUMS_URL="https://cdn.kernel.org/pub/linux/kernel/v${KERNEL_SERIES}/sha256sums.asc"
 

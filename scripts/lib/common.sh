@@ -26,6 +26,16 @@ BUSYBOX_SRC="$SOURCES_DIR/busybox-${BUSYBOX_VERSION}"
 BUSYBOX_BUILD="$BUILD_DIR/busybox"
 BUSYBOX_CONFIG="$CONFIGS_DIR/busybox.config"
 
+BINUTILS_ARCHIVE="$DOWNLOADS_DIR/binutils-${BINUTILS_VERSION}.tar.xz"
+BINUTILS_SRC="$SOURCES_DIR/binutils-${BINUTILS_VERSION}"
+
+TOOLCHAIN_DIR="$BUILD_DIR/toolchain"
+TOOLCHAIN_PREFIX="$TOOLCHAIN_DIR/cross"
+TOOLCHAIN_SYSROOT="$TOOLCHAIN_DIR/sysroot"
+TOOLCHAIN_OBJ="$TOOLCHAIN_DIR/obj"
+
+BINUTILS_BUILD="$TOOLCHAIN_OBJ/binutils"
+
 ROOTFS_BUILD="$BUILD_DIR/rootfs"
 INITRAMFS_STAGING="$BUILD_DIR/initramfs-root"
 ISO_STAGING="$BUILD_DIR/iso-root"
@@ -79,10 +89,39 @@ require_command() {
         || die "Comando obrigatório não encontrado: $1"
 }
 
+download_if_missing() {
+    local url="$1"
+    local destination="$2"
+
+    if [[ -f "$destination" ]]; then
+        log "Já existe: $(basename "$destination")"
+        return
+    fi
+
+    log "Baixando $(basename "$destination")..."
+
+    local temporary="${destination}.part"
+
+    rm -f "$temporary"
+
+    curl \
+        --fail \
+        --location \
+        --retry 3 \
+        --output "$temporary" \
+        "$url"
+
+    mv "$temporary" "$destination"
+}
+
 prepare_directories() {
     mkdir -p \
         "$DOWNLOADS_DIR" \
         "$SOURCES_DIR" \
         "$BUILD_DIR" \
-        "$IMAGES_DIR"
+        "$IMAGES_DIR" \
+        "$TOOLCHAIN_DIR" \
+        "$TOOLCHAIN_PREFIX" \
+        "$TOOLCHAIN_SYSROOT" \
+        "$TOOLCHAIN_OBJ"
 }
