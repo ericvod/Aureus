@@ -26,6 +26,8 @@ JOBS ?= $(shell nproc)
 	download-binutils \
 	toolchain-binutils \
 	verify-toolchain-binutils \
+	toolchain-linux-headers \
+	verify-toolchain-linux-headers
 
 all: kernel initramfs
 
@@ -89,27 +91,35 @@ purge: distclean
 verify-toolchain-binutils: toolchain-binutils
 	@./scripts/verify-toolchain-binutils.sh
 
+toolchain-linux-headers: download
+	@./scripts/install-linux-headers.sh
+
+verify-toolchain-linux-headers: toolchain-linux-headers
+	@./scripts/verify-toolchain-linux-headers.sh
+
 help:
 	@echo "Aureus build system"
 	@echo
 	@echo "Targets:"
-	@echo "  make doctor             		Verifica dependências do host"
-	@echo "  make download           		Baixa e extrai as fontes"
-	@echo "  make kernel             		Compila o kernel"
-	@echo "  make busybox            		Compila o BusyBox"
-	@echo "  make rootfs             		Monta o root filesystem"
-	@echo "  make initramfs          		Gera o initramfs"
-	@echo "  make                    		Constrói o kernel e o initramfs"
-	@echo "  make iso                		Gera a Live ISO inicializável"
-	@echo "  make verify-iso         		Constrói e verifica a Live ISO"
-	@echo "  make run                		Constrói e inicia pelo boot direto"
-	@echo "  make run-iso            		Constrói e inicia a Live ISO"
-	@echo "  make kernel-menuconfig  		Configura o kernel"
-	@echo "  make busybox-menuconfig 		Configura o BusyBox"
-	@echo "  make clean              		Remove build/"
-	@echo "  make distclean          		Remove build/ e sources/"
-	@echo "  make purge              		Remove build/, sources/ e downloads/"
-	@echo "  make doctor-toolchain        	Verifica dependências da toolchain"
-	@echo "  make download-binutils       	Baixa e verifica o GNU Binutils"
-	@echo "  make toolchain-binutils      	Constrói o cross Binutils"
-	@echo "  make verify-toolchain-binutils Verifica o cross Binutils"
+	@echo "  make doctor             				Verifica dependências do host"
+	@echo "  make download           				Baixa e extrai as fontes"
+	@echo "  make kernel             				Compila o kernel"
+	@echo "  make busybox            				Compila o BusyBox"
+	@echo "  make rootfs             				Monta o root filesystem"
+	@echo "  make initramfs          				Gera o initramfs"
+	@echo "  make                    				Constrói o kernel e o initramfs"
+	@echo "  make iso                				Gera a Live ISO inicializável"
+	@echo "  make verify-iso         				Constrói e verifica a Live ISO"
+	@echo "  make run                				Constrói e inicia pelo boot direto"
+	@echo "  make run-iso            				Constrói e inicia a Live ISO"
+	@echo "  make kernel-menuconfig  				Configura o kernel"
+	@echo "  make busybox-menuconfig 				Configura o BusyBox"
+	@echo "  make clean              				Remove build/"
+	@echo "  make distclean          				Remove build/ e sources/"
+	@echo "  make purge              				Remove build/, sources/ e downloads/"
+	@echo "  make doctor-toolchain        			Verifica dependências da toolchain"
+	@echo "  make download-binutils       			Baixa e verifica o GNU Binutils"
+	@echo "  make toolchain-binutils      			Constrói o cross Binutils"
+	@echo "  make verify-toolchain-binutils 		Verifica o cross Binutils"
+	@echo "  make toolchain-linux-headers       	Instala Linux UAPI headers no sysroot"
+	@echo "  make verify-toolchain-linux-headers 	Verifica Linux UAPI headers"
